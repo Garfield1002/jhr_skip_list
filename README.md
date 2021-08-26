@@ -42,15 +42,14 @@ Skip List Methods
   </tr>
   <tr>
     <td colspan="2">
-      <center>
-        <b>Creation and deletion</b>
-      </center>
+        <b align="center">Creation and deletion</b>
     </td>
   </tr>
   <tr>
     <td>(constructor)</td>
     <td>Create a skip list</td>
   </tr>
+  <tr></tr>
   <tr>
     <td>(destructor)</td>
     <td>Destroy a skip list</td>
@@ -66,6 +65,7 @@ Skip List Methods
     <td>length()</td>
     <td>Returns the number of elements in skip list</td>
   </tr>
+  <tr></tr>
   <tr>
     <td>MaxLevel()</td>
     <td>Calculates the optimal maximum for the amount of levels</td>
