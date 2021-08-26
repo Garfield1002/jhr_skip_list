@@ -42,7 +42,7 @@ Skip List Methods
   </tr>
   <tr>
     <td colspan="2">
-        <b align="center">Creation and deletion</b>
+        <b>Creation and deletion</b>
     </td>
   </tr>
   <tr>
@@ -56,9 +56,7 @@ Skip List Methods
   </tr>
   <tr>
     <td colspan="2">
-      <center>
         <b>Size and capacity</b>
-      </center>
     </td>
   </tr>
   <tr>
@@ -72,9 +70,7 @@ Skip List Methods
   </tr>
   <tr>
     <td colspan="2">
-      <center>
         <b>Element access</b>
-      </center>
     </td>
   </tr>
   <tr>
@@ -83,24 +79,21 @@ Skip List Methods
   </tr>
   <tr>
     <td colspan="2">
-      <center>
         <b>Modification</b>
-      </center>
     </td>
   </tr>
   <tr>
     <td>insert()</td>
     <td>Inserts an element in the skip list</td>
   </tr>
+  <tr></tr>
   <tr>
     <td>remove()</td>
     <td>Removes an element from the skip list and deletes it</td>
   </tr>
   <tr>
     <td colspan="2">
-      <center>
         <b>Searching</b>
-      </center>
     </td>
   </tr>
   <tr>
@@ -109,9 +102,7 @@ Skip List Methods
   </tr>
   <tr>
     <td colspan="2">
-      <center>
         <b>Visualization</b>
-      </center>
     </td>
   </tr>
   <tr>
