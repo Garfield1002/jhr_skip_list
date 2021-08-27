@@ -15,6 +15,12 @@ Skip lists are a simple data structure that can be used in place of balanced tre
 
 ## 📚 Usage
 
+The idea behind single-header file libraries is that they're easy to distribute and deploy because all the code is contained in a single file.
+The .hpp file acts as its own header files, i.e. it declares the functions and classes contained in the file but no code is getting compiled.
+
+So in addition, you should select _exactly_ one C++ source file that actually instantiates the code, preferably a file you're not editing frequently.
+This file should define `JHR_SKIP_LIST_IMPLEMENTATION` to actually enable the function definitions.
+
 ```cpp
 #define JHR_SKIP_LIST_IMPLEMENTATION
 #include "jhr_skip_list.hpp"
@@ -111,9 +117,10 @@ Skip List Methods
   </tr>
 </table>
 
-## Contribution
+## ⭐ Contribution
 
-TODO
+All contributions are welcome!
+The code is currently following [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html).
 
 ## ⚖ License
 
