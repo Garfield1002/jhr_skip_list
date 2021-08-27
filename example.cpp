@@ -13,24 +13,29 @@ int main() {
     skip.insert(new int{l[i]});
   }
 
+  std::cout << "Display Example" << std::endl;
   skip.DisplayList();
 
-  std::cout << "\n\n\n"
-            << "is 1 in skip ? " << (skip.find(&l[10]) == nullptr) << '\n'
-            << "is 3 in skip ? " << (skip.find(&l[0]) == nullptr) << '\n';
+  std::cout << "\n\nFind Example" << std::endl
+            << "is 1 in skip ? " << (skip.find(&l[10]) == nullptr) << std::endl
+            << "is 3 in skip ? " << (skip.find(&l[0]) == nullptr) << "\n\n";
 
-  std::cout << "\n\n\n"
-            << "skip[0]: " << *(skip[0]->ptr_) << '\n'
-            << "skip[1]: " << *(skip[1]->ptr_) << '\n'
-            << "skip[3]: " << *(skip[3]->ptr_) << '\n';
+  std::cout << "Random Access Example" << std::endl
+            << "skip[0]: " << *(skip[0]->ptr_) << std::endl
+            << "skip[1]: " << *(skip[1]->ptr_) << std::endl
+            << "skip[3]: " << *(skip[3]->ptr_) << "\n\n";
 
   skip.remove(&l[2]);
+  std::cout << "Remove Example" << std::endl
+            << "Removed element 7 from the skip list."
+            << "\n\n";
 
+  std::cout << "Display Example" << std::endl;
   skip.DisplayList();
 
-  std::cout << "\n\n\n"
-            << "skip[0]: " << *(skip[0]->ptr_) << '\n'
-            << "skip[1]: " << *(skip[1]->ptr_) << '\n'
+  std::cout << "\n\nRandom Access Example" << std::endl
+            << "skip[0]: " << *(skip[0]->ptr_) << std::endl
+            << "skip[1]: " << *(skip[1]->ptr_) << std::endl
             << "skip[3]: " << *(skip[3]->ptr_) << '\n';
 
   return 0;
