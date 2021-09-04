@@ -1,5 +1,7 @@
 # C++ Skip List Implementation
 
+_You should probably favor of the more universal [C89 skip list library](https://github.com/Garfield1002/jrsl). Though feel free to continue using this library if you prefer fancy C++ notations_
+
 > Skip lists are a data structure that can be used in place of balanced trees.
 > Skip lists use probabilistic balancing rather than strictly enforced balancing
 > and as a result the algorithms for insertion and deletion in skip lists are
