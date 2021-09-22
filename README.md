@@ -95,7 +95,7 @@ Skip List Methods
   <tr></tr>
   <tr>
     <td>remove()</td>
-    <td>Removes an element from the skip list and deletes it</td>
+    <td>Removes an element from the skip list and returns it</td>
   </tr>
   <tr>
     <td colspan="2">
