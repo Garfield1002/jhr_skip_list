@@ -1,5 +1,7 @@
 # C++ Skip List Implementation
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/0381c772a6cf4efda37541ac0de5b36a)](https://app.codacy.com/gh/Garfield1002/jhr_skip_list?utm_source=github.com&utm_medium=referral&utm_content=Garfield1002/jhr_skip_list&utm_campaign=Badge_Grade_Settings)
+
 _You should probably favor of the more universal [C89 skip list library](https://github.com/Garfield1002/jrsl). Though feel free to continue using this library if you prefer fancy C++ notations_
 
 > Skip lists are a data structure that can be used in place of balanced trees.
