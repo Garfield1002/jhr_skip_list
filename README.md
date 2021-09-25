@@ -10,7 +10,7 @@ _You should probably favor of the more universal [C89 skip list library](https:/
 
 This is an implementation of the data type described in [William Pugh's paper](https:www.epaperpress.com/sortsearch/download/skiplist.pdf).
 
-## 💡 Why use Skip Lists ?
+## 💡 Why use Skip Lists
 
 Skip Lists allow insertion, deletion, random access and search in O(log n) on average (and O(n) in worst case).
 Skip lists are a simple data structure that can be used in place of balanced trees for most applications and are much less daunting.

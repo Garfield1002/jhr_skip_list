@@ -119,8 +119,7 @@ class Skip_Node {
   }
 
   ~Skip_Node() {
-    if (forward_)
-      delete[] forward_;
+    if (forward_) delete[] forward_;
   };
 };
 
@@ -162,8 +161,7 @@ class Skip_List {
         head_{new Skip_Node<T>(nullptr, max_level)} {}
 
   ~Skip_List() {
-    if (!head_)
-      return;
+    if (!head_) return;
     Skip_Node<T>* node = head_;
     while (node) {
       Skip_Node<T>* next_node = node->forward_[0].node;
@@ -204,19 +202,18 @@ class Skip_List {
 // pointer.
 template <typename T>
 jhr::Skip_Node<T>* jhr::Skip_List<T>::at(size_t index) {
-  if (index >= width_)
-    return nullptr;
+  if (index >= width_) return nullptr;
 
   size_t w{index + 1};
 
   jhr::Skip_Node<T>* x{head_};
 
-  for (size_t i = level_ - 1; i >= 0; i--) {
-    while (x->forward_[i].node != nullptr && x->forward_[i].width <= w) {
-      w -= x->forward_[i].width;
-      x = x->forward_[i].node;
-      if (w == 0)
-        return x;
+  for (size_t i = level_; i > 0; i--) {
+    while (x->forward_[i - 1].node != nullptr &&
+           x->forward_[i - 1].width <= w) {
+      w -= x->forward_[i - 1].width;
+      x = x->forward_[i - 1].node;
+      if (w == 0) return x;
     }
   }
 
@@ -302,8 +299,7 @@ jhr::Skip_Node<T>* jhr::Skip_List<T>::find(T* const& ptr) {
     }
   }
   x = x->forward_[0].node;
-  if (*(x->ptr_) == *ptr)
-    return x;
+  if (*(x->ptr_) == *ptr) return x;
 
   return nullptr;
 };
@@ -350,8 +346,7 @@ jhr::Skip_Node<T>* jhr::Skip_List<T>::insert(T* const& ptr) {
 
   // If the node is already in the list retuns the already existing node
   if (x->forward_[0].node != nullptr)
-    if (*(x->forward_[0].node->ptr_) == *ptr)
-      return x->forward_[0].node;
+    if (*(x->forward_[0].node->ptr_) == *ptr) return x->forward_[0].node;
 
   Skip_Node<T>* new_node = CreateNode(ptr, level);
 
@@ -392,10 +387,8 @@ jhr::Skip_Node<T>* jhr::Skip_List<T>::insert(T* const& ptr) {
 // If `p` is invalid (p > 1 || p < 0) returns 0
 template <typename T>
 inline size_t jhr::Skip_List<T>::MaxLevel(
-    size_t N /*maximum number of elements*/,
-    float p) {
-  if (!(0 <= p <= 1))
-    return 0;
+    size_t N /*maximum number of elements*/, float p) {
+  if (!(0.0F <= p <= 1.0F)) return 0;
   return static_cast<size_t>(log(N) / log(1 / p));
 }
 
@@ -429,8 +422,7 @@ T* jhr::Skip_List<T>::remove(T* const& ptr) {
   x = x->forward_[0].node;
 
   // Could not find `*ptr` in the skip list
-  if (!(*(x->ptr_) == *ptr))
-    return nullptr;
+  if (!(*(x->ptr_) == *ptr)) return nullptr;
 
   for (size_t i = 0; i < level_; i++) {
     if (update[i]->forward_[i].node != x) {
@@ -455,8 +447,7 @@ T* jhr::Skip_List<T>::remove(T* const& ptr) {
   delete x;
 
   // Updates the list's max level
-  while (level_ > 1 && head_->forward_[level_ - 1].node == nullptr)
-    level_--;
+  while (level_ > 1 && head_->forward_[level_ - 1].node == nullptr) level_--;
 
   return old_data;
 };
