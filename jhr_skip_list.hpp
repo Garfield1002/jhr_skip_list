@@ -83,6 +83,7 @@
 //  | DisplayList() | Prints a visual representation of the skip list         |
 // ============================================================================
 
+#include <cassert>
 #include <cmath>  // for log
 #include <cstdlib>
 #include <iostream>
@@ -105,22 +106,18 @@ class Skip_Node {
   size_t level_;
 
  public:
-  T* const ptr_;
+  T const* ptr_;
 
   // Array of links to different nodes
-  Skip_Link<T>* forward_;
+  std::unique_ptr<Skip_Link<T>[]> forward_;
 
-  Skip_Node(T* const& ptr, size_t level)
+  Skip_Node(T const* ptr, size_t level)
       : ptr_{ptr}, forward_{new Skip_Link<T>[level]}, level_{level} {
     // Initialize the link array
     for (size_t i = 0; i < level; i++) {
       forward_[i] = Skip_Link<T>();
     }
   }
-
-  ~Skip_Node() {
-    if (forward_) delete[] forward_;
-  };
 };
 
 // TODO description
@@ -146,7 +143,7 @@ class Skip_List {
   size_t RandomLevel();
 
   // Creates a new node, wraps the node initializer.
-  inline Skip_Node<T>* CreateNode(T* const& ptr, size_t level) {
+  inline Skip_Node<T>* CreateNode(T const* ptr, size_t level) {
     return new jhr::Skip_Node<T>(ptr, level);
   }
 
@@ -155,6 +152,12 @@ class Skip_List {
  public:
   Skip_List() {}
 
+  Skip_List(std::initializer_list<T> initial_values) {
+    for (T value : initial_values) {
+      insert(value);
+    }
+  }
+
   Skip_List(size_t max_level, float p)
       : kMaxLevel_{max_level},
         p_{p},
@@ -162,33 +165,36 @@ class Skip_List {
 
   ~Skip_List() {
     if (!head_) return;
+
     Skip_Node<T>* node = head_;
     while (node) {
       Skip_Node<T>* next_node = node->forward_[0].node;
-      delete node->ptr_;
       delete node;
       node = next_node;
     }
   };
 
-  Skip_Node<T>* at(size_t index);
-  Skip_Node<T>* operator[](size_t index) { return at(index); };
+  T const& at(size_t index);
+  T const& operator[](size_t index) { return at(index); };
 
   void DisplayList();
 
   // Returns `true` if the skip list is empty.
   inline bool empty() { return !head_->forward_[0].node; }
 
-  Skip_Node<T>* find(T* const& ptr);
+  // TODO FIX
+  T const* find(T const& ptr);
 
-  Skip_Node<T>* insert(T* const& ptr);
+  // TODO FIX
+  T const* insert(T const& ptr);
 
   // Returns the length of the skip list.
   inline size_t length() { return width_; }
 
   static size_t MaxLevel(size_t N /*maximum number of elements*/, float p);
 
-  T* remove(T* const& ptr);
+  // TODO FIX
+  T const* remove(T const& ptr);
 
   // TODO add + operator support
   // add an arry or an other skip list ?
@@ -201,8 +207,8 @@ class Skip_List {
 // If `index` is greater than the width of the skip list returns a null
 // pointer.
 template <typename T>
-jhr::Skip_Node<T>* jhr::Skip_List<T>::at(size_t index) {
-  if (index >= width_) return nullptr;
+T const& jhr::Skip_List<T>::at(size_t index) {
+  if (index >= width_) throw std::overflow_error("SKIP_LIST");
 
   size_t w{index + 1};
 
@@ -213,11 +219,14 @@ jhr::Skip_Node<T>* jhr::Skip_List<T>::at(size_t index) {
            x->forward_[i - 1].width <= w) {
       w -= x->forward_[i - 1].width;
       x = x->forward_[i - 1].node;
-      if (w == 0) return x;
+      if (w == 0) {
+        assert(x->ptr_ != nullptr);
+        return *x->ptr_;
+      }
     }
   }
-
-  return nullptr;
+  DisplayList();
+  throw std::overflow_error("SKIP_LIST");
 };
 
 // Centers a string by padding it left and right with spaces.
@@ -273,46 +282,50 @@ void jhr::Skip_List<T>::DisplayList() {
     std::cout << "Level " << i - 1 << std::endl;
   }
 
-  // Draws the node labels
+// Draws the node labels
+#if 0
   Skip_Node<T>* node = head_;
   while (node != nullptr) {
-    if (node->ptr_) {
-      std::cout << std::to_string(*(node->ptr_))
-                << std::string(6 - std::to_string(*(node->ptr_)).length(), ' ');
+    if (node->ptr_ != nullptr) {
+      std::cout << std::to_string(*node->ptr_)
+                << std::string(6 - std::to_string(*node->ptr_).length(), ' ');
     } else {
       std::cout << std::string(6, ' ');
     }
     node = node->forward_[0].node;
   }
+#endif
 }
 
 // Returns the node associated with `ptr` if it exist.
-// Ff `ptr` is not in the skip list it returns a null pointer.
+// If `ptr` is not in the skip list it returns a null pointer.
 template <typename T>
-jhr::Skip_Node<T>* jhr::Skip_List<T>::find(T* const& ptr) {
+T const* jhr::Skip_List<T>::find(T const& ptr) {
   jhr::Skip_Node<T>* x{head_};
 
   for (size_t i = level_; i > 0; i--) {
     while (x->forward_[i - 1].node != nullptr &&
-           *(x->forward_[i - 1].node->ptr_) < *ptr) {
+           *(x->forward_[i - 1].node->ptr_) < ptr) {
       x = x->forward_[i - 1].node;
     }
   }
   x = x->forward_[0].node;
-  if (*(x->ptr_) == *ptr) return x;
+  if (*(x->ptr_) == ptr) return x->ptr_;
 
   return nullptr;
 };
 
 // Inserts a new element in the skip list returns a pointer to the newly
-// created node. If the element was already in the skip list, returns a
-// pointer to the node with that elenent.
+// created node. If the element was already in the skip list, updates the data
+// and returns the previously stored data
 template <typename T>
-jhr::Skip_Node<T>* jhr::Skip_List<T>::insert(T* const& ptr) {
+T const* jhr::Skip_List<T>::insert(T const& ptr) {
   // Array of pointers to elements that will need updating
-  Skip_Node<T>** update{new Skip_Node<T>* [kMaxLevel_] {}};
+  std::unique_ptr<Skip_Node<T>* []> update {
+    new Skip_Node<T>* [kMaxLevel_] {}
+  };
 
-  size_t* update_width{new size_t[kMaxLevel_]{}};
+  std::unique_ptr<size_t[]> update_width{new size_t[kMaxLevel_]{}};
 
   Skip_Node<T>* x{head_};
 
@@ -321,7 +334,7 @@ jhr::Skip_Node<T>* jhr::Skip_List<T>::insert(T* const& ptr) {
     size_t width_sum{0};
 
     while (x->forward_[i - 1].node != nullptr &&
-           *(x->forward_[i - 1].node->ptr_) < *ptr) {
+           *(x->forward_[i - 1].node->ptr_) < ptr) {
       width_sum += x->forward_[i - 1].width;
       x = x->forward_[i - 1].node;
     }
@@ -346,9 +359,13 @@ jhr::Skip_Node<T>* jhr::Skip_List<T>::insert(T* const& ptr) {
 
   // If the node is already in the list retuns the already existing node
   if (x->forward_[0].node != nullptr)
-    if (*(x->forward_[0].node->ptr_) == *ptr) return x->forward_[0].node;
+    if (*(x->forward_[0].node->ptr_) == ptr) {
+      T const* old_data = x->forward_[0].node->ptr_;
+      x->forward_[0].node->ptr_ = new T{ptr};
+      return old_data;
+    }
 
-  Skip_Node<T>* new_node = CreateNode(ptr, level);
+  Skip_Node<T>* new_node = CreateNode(new T{ptr}, level);
 
   for (size_t i = 0; i < level; i++) {
     // Update the linked nodes
@@ -374,12 +391,19 @@ jhr::Skip_Node<T>* jhr::Skip_List<T>::insert(T* const& ptr) {
     }
   }
 
-  delete[] update;
-  delete[] update_width;
+  /* Updates the widths of the links above the newly created node. */
+  for (size_t i = level; i < level_; ++i) {
+    if (update[i]->forward_[i].node)
+      ++update[i]->forward_[i].width;
+    else
+      /* The width to NULL is always 0 and does not need updating. All links
+       * above a link pointing to NULL will point to NULL. */
+      break;
+  }
 
   width_++;
 
-  return new_node;
+  return nullptr;
 }
 
 // Returns the optimal max level based on the probability `p` to add a new
@@ -406,14 +430,16 @@ size_t jhr::Skip_List<T>::RandomLevel() {
 // Removes an element from the skip list and returns a boolean if the
 // operation was successful
 template <typename T>
-T* jhr::Skip_List<T>::remove(T* const& ptr) {
-  Skip_Node<T>** update{new jhr::Skip_Node<T>* [level_] {}};
+T const* jhr::Skip_List<T>::remove(T const& ptr) {
+  std::unique_ptr<Skip_Node<T>* []> update {
+    new jhr::Skip_Node<T>* [level_] {}
+  };
 
   Skip_Node<T>* x{head_};
 
   for (size_t i = level_; i > 0; i--) {
     while (x->forward_[i - 1].node != nullptr &&
-           *(x->forward_[i - 1].node->ptr_) < *ptr) {
+           *(x->forward_[i - 1].node->ptr_) < ptr) {
       x = x->forward_[i - 1].node;
     }
     update[i - 1] = x;
@@ -422,17 +448,14 @@ T* jhr::Skip_List<T>::remove(T* const& ptr) {
   x = x->forward_[0].node;
 
   // Could not find `*ptr` in the skip list
-  if (!(*(x->ptr_) == *ptr)) return nullptr;
+  if (x == nullptr) return nullptr;
+  if (!(*(x->ptr_) == ptr)) return nullptr;
 
   for (size_t i = 0; i < level_; i++) {
     if (update[i]->forward_[i].node != x) {
       update[i]->forward_[i].width--;
     } else {
       update[i]->forward_[i].node = x->forward_[i].node;
-
-      // Removes the link to other nodes to not erase the entire list when we
-      // delete this node
-      x->forward_[i].node = nullptr;
 
       if (x->forward_[i].width > 0)
         update[i]->forward_[i].width += x->forward_[i].width - 1;
@@ -441,9 +464,7 @@ T* jhr::Skip_List<T>::remove(T* const& ptr) {
     }
   }
 
-  delete[] update;
-
-  T* old_data = x->ptr_;
+  T const* old_data = x->ptr_;
   delete x;
 
   // Updates the list's max level
