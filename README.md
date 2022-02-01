@@ -10,7 +10,7 @@ _You should probably favor of the more universal [C89 skip list library](https:/
 > much simpler and significantly faster than equivalent algorithms for
 > balanced trees.
 
-This is an implementation of the data type described in [William Pugh's paper](https:www.epaperpress.com/sortsearch/download/skiplist.pdf).
+This is an implementation of the data type described in [William Pugh's paper](https://www.epaperpress.com/sortsearch/download/skiplist.pdf).
 
 ## 💡 Why use Skip Lists
 
